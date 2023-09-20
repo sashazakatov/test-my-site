@@ -1,23 +1,33 @@
 import { useFormik } from "formik";
-import { useState } from "react";
+import React, { useState } from "react";
 import Input from "../input/Input";
-import cross from "../../icons/system-uicons_cross.svg";
-import { FormData } from "../input/inputVariables";
 import { ModalCreateSchema } from "../input/ModalCreateValidation";
 import Select from "../input/Select";
+import { useAppDispatch } from "../../Hook";
+import { ValuesData } from "../input/inputVariables";
 
 export type ModalProfileData = {
   active: boolean;
   setActive: (active: boolean) => void;
   children?: React.ReactNode;
   activeClassName: string;
-  userRole?: string;
+  title?: string;
+  setName: (value: string) => void;
+  setSurname: (value: string) => void;
+  setEmail: (value: string) => void;
+  setCountry: (value: string) => void;
+  setCity: (value: string) => void;
+  setPassword: (value: string) => void;
+  setRole: (value: string) => void;
+  setAddress: (value: string) => void;
+  onCreateUserSubmit: (values: ValuesData) => void;
 };
 
 const ModalProfile = ({ ...props }: ModalProfileData) => {
   const [hidePassword, setHidePassword] = useState(false);
+  const dispatch = useAppDispatch();
 
-  const formik = useFormik({
+  const { values, errors, touched, handleBlur, handleChange, handleSubmit } = useFormik({
     initialValues: {
       name: "",
       surname: "",
@@ -27,37 +37,47 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
       password: "",
       address: "",
       role: "",
+      phone_number: "098765434",
     },
     validationSchema: ModalCreateSchema,
-    onSubmit: (values: FormData) => {
-      console.log(values);
+    onSubmit: async () => {
+      props.onCreateUserSubmit(values);
     },
   });
+
+  props.setName(values.name);
+  props.setSurname(values.surname);
+  props.setEmail(values.email);
+  props.setRole(values.role);
+  props.setPassword(values.password);
+  props.setAddress(values.address);
+  props.setCountry(values.country);
+  props.setCity(values.city);
 
   return (
     <div>
       <div className="modal__top">
-        <h3 className="form-wrapper-modal__title">Edit user</h3>
+        <h3 className="form-wrapper-modal__title">{props.title}</h3>
         <span className="cross__wrapper" onClick={() => props.setActive(false)}>
           <img src="icons/system-uicons_cross.svg" alt="cross" />
         </span>
       </div>
       <div className="form-wrapper-modal ">
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="signUp__form--modal">
             <div className="left__form--modal">
               <div className=" form__firstname ">
                 <Input
-                  id={"firstname"}
-                  name={"firstname"}
+                  id={"name"}
+                  name={"name"}
                   type={"text"}
                   placeholder={"Firstname"}
                   className={"form firstName"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.name}
-                  touched={formik.touched.name}
-                  errors={formik.errors.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.name}
+                  touched={touched.name}
+                  errors={errors.name}
                 />
               </div>
 
@@ -68,11 +88,11 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                   type={"email"}
                   placeholder={"Email"}
                   className={"form email"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.email}
-                  touched={formik.touched.email}
-                  errors={formik.errors.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.email}
+                  touched={touched.email}
+                  errors={errors.email}
                 />
               </div>
 
@@ -83,26 +103,26 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                   type={"text"}
                   placeholder={"Country"}
                   className={"form country"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.country}
-                  touched={formik.touched.country}
-                  errors={formik.errors.country}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.country}
+                  touched={touched.country}
+                  errors={errors.country}
                 />
               </div>
 
               <div className=" form__adress ">
                 <Input
-                  id={"adress"}
-                  name={"adress"}
+                  id={"address"}
+                  name={"address"}
                   type={"text"}
                   placeholder={"Adress"}
                   className={"form adress"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.address}
-                  touched={formik.touched.address}
-                  errors={formik.errors.address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.address}
+                  touched={touched.address}
+                  errors={errors.address}
                 />
               </div>
             </div>
@@ -110,16 +130,16 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
             <div className="right__form--modal">
               <div className=" form__lastname">
                 <Input
-                  id={"lastname"}
-                  name={"lastname"}
+                  id={"surname"}
+                  name={"surname"}
                   type={"text"}
                   placeholder={"Lastname"}
                   className={"form lastName"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.surname}
-                  touched={formik.touched.surname}
-                  errors={formik.errors.surname}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.surname}
+                  touched={touched.surname}
+                  errors={errors.surname}
                 />
               </div>
 
@@ -130,11 +150,11 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                   type={hidePassword ? "text" : "password"}
                   placeholder={"Password"}
                   className={"form password"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.password}
-                  touched={formik.touched.password}
-                  errors={formik.errors.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.password}
+                  touched={touched.password}
+                  errors={errors.password}
                 />
                 <span
                   className={hidePassword ? "hiding__icon-modal disabled" : "hiding__icon-modal"}
@@ -146,16 +166,16 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
 
               <div className=" form__town ">
                 <Input
-                  id={"town"}
-                  name={"town"}
+                  id={"city"}
+                  name={"city"}
                   type={"text"}
                   placeholder={"Town"}
                   className={"form town"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.city}
-                  touched={formik.touched.city}
-                  errors={formik.errors.city}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.city}
+                  touched={touched.city}
+                  errors={errors.city}
                 />
               </div>
               <div className=" form__select--desktop ">
@@ -165,25 +185,25 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                   type={"text"}
                   placeholder={"Role"}
                   className={"form role"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.role}
-                  touched={formik.touched.role}
-                  errors={formik.errors.role}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.role}
+                  touched={touched.role}
+                  errors={errors.role}
                 >
-                  <option value="" disabled selected className="date-pagination__option">
+                  <option value="" disabled defaultValue={"Role"} className="date-pagination__option">
                     Role
                   </option>
-                  <option value="Customer" className="date-pagination__option">
+                  <option value="customer" className="date-pagination__option">
                     Customer
                   </option>
-                  <option value="Device owner" className="date-pagination__option">
+                  <option value="device_owner" className="date-pagination__option">
                     Device owner
                   </option>
-                  <option value="Regional admin" className="date-pagination__option">
+                  <option value="regional_admin" className="date-pagination__option">
                     Regional admin
                   </option>
-                  <option value="Super admin" className="date-pagination__option">
+                  <option value="super_admin" className="date-pagination__option">
                     Super admin
                   </option>
                 </Select>
@@ -204,35 +224,35 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
       </div>
 
       <div className="form-wrapper-modal--mobile ">
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="signUp__form--modal">
             <div className=" form__firstname ">
               <Input
-                id={"firstname"}
-                name={"firstname"}
+                id={"name"}
+                name={"name"}
                 type={"text"}
                 placeholder={"Firstname"}
                 className={"form-modal firstName"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.name}
-                touched={formik.touched.name}
-                errors={formik.errors.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.name}
+                touched={touched.name}
+                errors={errors.name}
               />
             </div>
 
             <div className=" form__lastname">
               <Input
-                id={"lastname"}
-                name={"lastname"}
+                id={"surname"}
+                name={"surname"}
                 type={"text"}
                 placeholder={"Lastname"}
                 className={"form-modal lastName"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.surname}
-                touched={formik.touched.surname}
-                errors={formik.errors.surname}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.surname}
+                touched={touched.surname}
+                errors={errors.surname}
               />
             </div>
 
@@ -243,26 +263,26 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                 type={"email"}
                 placeholder={"Email"}
                 className={"form-modal email"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.email}
-                touched={formik.touched.email}
-                errors={formik.errors.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.email}
+                touched={touched.email}
+                errors={errors.email}
               />
             </div>
 
             <div className=" form__adress-modal ">
               <Input
-                id={"adress"}
-                name={"adress"}
+                id={"address"}
+                name={"address"}
                 type={"text"}
                 placeholder={"Adress"}
                 className={"form-modal adress"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.address}
-                touched={formik.touched.address}
-                errors={formik.errors.address}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.address}
+                touched={touched.address}
+                errors={errors.address}
               />
             </div>
 
@@ -273,11 +293,11 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                 type={hidePassword ? "text" : "password"}
                 placeholder={"Password"}
                 className={"form-modal password"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.password}
-                touched={formik.touched.password}
-                errors={formik.errors.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.password}
+                touched={touched.password}
+                errors={errors.password}
               />
               <span
                 className={hidePassword ? "hiding__icon-modal disabled" : "hiding__icon-modal"}
@@ -294,25 +314,25 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                 type={"text"}
                 placeholder={"Country"}
                 className={"form-modal country"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.country}
-                touched={formik.touched.country}
-                errors={formik.errors.country}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.country}
+                touched={touched.country}
+                errors={errors.country}
               />
             </div>
             <div className=" form__town ">
               <Input
-                id={"town"}
-                name={"town"}
+                id={"city"}
+                name={"city"}
                 type={"text"}
                 placeholder={"Town"}
                 className={"form-modal town"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.city}
-                touched={formik.touched.city}
-                errors={formik.errors.city}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.city}
+                touched={touched.city}
+                errors={errors.city}
               />
             </div>
 
@@ -323,25 +343,25 @@ const ModalProfile = ({ ...props }: ModalProfileData) => {
                 type={"text"}
                 placeholder={"Role"}
                 className={"form-modal role"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.role}
-                touched={formik.touched.role}
-                errors={formik.errors.role}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.role}
+                touched={touched.role}
+                errors={errors.role}
               >
-                <option value="" disabled selected className="date-pagination__option">
+                <option value="" disabled defaultValue={"Role"} className="date-pagination__option">
                   Role
                 </option>
-                <option value="Customer" className="date-pagination__option">
+                <option value="customer" className="date-pagination__option">
                   Customer
                 </option>
-                <option value="Device owner" className="date-pagination__option">
+                <option value="device_owner" className="date-pagination__option">
                   Device owner
                 </option>
-                <option value="Regional admin" className="date-pagination__option">
+                <option value="regional_admin" className="date-pagination__option">
                   Regional admin
                 </option>
-                <option value="Super admin" className="date-pagination__option">
+                <option value="super_admin" className="date-pagination__option">
                   Super admin
                 </option>
               </Select>
